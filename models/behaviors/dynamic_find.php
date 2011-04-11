@@ -53,46 +53,42 @@ class DynamicFindBehavior extends ModelBehavior {
 	function _find(&$model, $method, $cond = null) {
 		$a = $model->alias;
 		$s = isset($this->settings[$a]) ? $this->settings[$a] : $this->_allowed;
-		$fields = $ret = array();
-		$virtual = $_field = $_cond = false;
+		$fields = array();
+		$virtual = $ret = $_field = $_cond = false;
 		if ($this->_check($method, $s)) {
-			$ret = $this->_cache($method, $a, $cond);
-			if (is_array($ret) && empty($ret)) {
-				$tmp = array_merge(array_keys($model->schema()), array_keys($model->virtualFields));
-				foreach ($tmp as $field) {
-					$fields[strtolower(str_replace('_', '', $field))] = $field;
-				}
-				$search = substr($method, (strpos($method, 'find') + 4), (strpos($method, 'by') - 4));
-				if (array_key_exists($search, $fields)) {
-					$_field = $fields[$search];
-				}
-				$search = substr($method, strpos($method, 'by') + 2);
-				if (array_key_exists($search, $fields)) {
-					$_cond = $fields[$search];
-				}
-				if (
-					$_field &&
-					$_cond &&
-					$model->hasField($_field, true) &&
-					$model->hasField($_cond, true)
-				) {
-					$result = $model->find('first', array(
-						'conditions' => array(
-							$model->alias.'.'.$_cond => $cond
-						),
-						'recursive' => -1
-					));
-					if (array_key_exists($_field, $result[$model->alias])) {
-						$ret = $result[$model->alias][$_field]
+			$tmp = array_merge(array_keys($model->schema()), array_keys($model->virtualFields));
+			foreach ($tmp as $field) {
+				$fields[strtolower(str_replace('_', '', $field))] = $field;
+			}
+			$search = substr($method, (strpos($method, 'find') + 4), (strpos($method, 'by') - 4));
+			if (array_key_exists($search, $fields)) {
+				$_field = $fields[$search];
+			}
+			$search = substr($method, strpos($method, 'by') + 2);
+			if (array_key_exists($search, $fields)) {
+				$_cond = $fields[$search];
+			}
+			if (
+				$_field &&
+				$_cond &&
+				$model->hasField($_field, true) &&
+				$model->hasField($_cond, true)
+			) {
+				$results = $model->find('all', array(
+					'conditions' => array(
+						$model->alias.'.'.$_cond => $cond
+					),
+					'recursive' => -1
+				));
+				if (!empty($results)) {
+					$_values = Set::extract('/'.$model->alias.'/'.$_field, $results);
+					$_keys = Set::extract('/'.$model->alias.'/'.$model->primaryKey, $results);
+					if (count($_values) > 1) {
+						$ret = $_values[0];
+					} else {
+						$ret = array_combine($_keys, $_values);
 					}
 				}
-			}
-			if (!is_array($ret)) {
-				$ret = array(
-					$model->alias => array(
-						$_field => 
-					)
-				);
 			}
 		}
 		return $ret;
@@ -111,34 +107,6 @@ class DynamicFindBehavior extends ModelBehavior {
 	
 	}
 
-	/**
-	 * Sets and retrieves data from the _cache property based on the method called, 
-	 * the model alias, and the condition. If the 4th param is set, then data is 
-	 * saved into the array.
-	 *
-	 * @param string $method
-	 * @param string $alias
-	 * @param mixed $condition
-	 * @param mixed $result
-	 * @access public
-	 * @return mixed
-	 */
-	function _cache($method, $alias, $condition, $result = null) {
-		$ret = array();
-		if (is_array($condition)) {
-			$condition = serialize($condition);
-		}
-		if ($result === null) {
-			if (isset($this->_cache[$alias][$method][$condition])) {
-				$ret = $this->_cache[$alias][$method][$condition];
-			}
-		} else {
-			$existing = $this->_cache[$alias];
-			$new = array($method => array($condition => $result));
-			$this->_cache[$alias] = Set::merge($new, $existing);
-		}
-		return $ret;
-	}
 }
 
 ?>
