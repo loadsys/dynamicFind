@@ -36,10 +36,7 @@ class DynamicFindBehavior extends ModelBehavior {
  */
 	function setup(&$model, $options = array()) {
 		$a = $model->alias;
-		extract($this->_allowed);
-		extract(array_intersect_key($options, $this->_allowed));
-		$this->settings[$a] = compact('whitelist', 'blacklist', 'log');
-		$this->_cache[$a] = array();
+		$this->settings[$a] = $options;
 	}
 
 /** 
