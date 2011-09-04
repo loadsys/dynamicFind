@@ -1,24 +1,20 @@
-h1. Dynamic Find Behavior
+# Dynamic Find Behavior
 
-h2. Background
+## Background
 
-h2. Requirements
+## Requirements
 
-h2. Installation
+## Installation
 	
-<pre>
-<code>
-cd app/plugins
-git clone git://github.com/joeytrapp/Dynamic-Find-Behavior.git dynamic_find
-</pre>
-</code>	
+	cd app/plugins
+	git clone git://github.com/joeytrapp/Dynamic-Find-Behavior.git dynamic_find
 
-h2. Usage
+## Usage
 
 This behavior allows you to use more convenience methods on your models. Methods like $this->ModelName->findNameById($id), where Name can be any field or virtual field in the database table, and Id can be any field (not virtual) in the same table.
 
-h2. Options
+## Options
 
-h2. Todo
+## Todo
 
-h2. License
+## License
