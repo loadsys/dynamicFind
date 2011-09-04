@@ -13,8 +13,8 @@ Multiple methods are available, but all can take a second parameter, which is an
 
 The possible methods available are:
 
-* find[FieldName]By[OtherField]($condition);
-* findList[FieldName]By[OtherField]($condition);
-* findAll[FieldName]By[OtherField]($condition);
+* findFieldNameByOtherField($condition);
+* findListFieldNameByOtherField($condition);
+* findAllFieldNameByOtherField($condition);
 
 All of these methods can also be used by replacing the By with For if that makes the method name more readable.
