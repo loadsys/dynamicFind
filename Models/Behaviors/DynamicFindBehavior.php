@@ -50,7 +50,7 @@ class DynamicFindBehavior extends ModelBehavior {
 		preg_match('/^(find){1}(All|List)?(.+)(By|For){1}(.+)$/', $method, $matches);
 		$type = 'first';
 		if (!empty($matches[2])) {
-			$type = $matches[2];
+			$type = strtolower($matches[2]);
 		}
 		$retrieve_field = Inflector::underscore($matches[3]);
 		$search_field = Inflector::underscore($matches[5]);
