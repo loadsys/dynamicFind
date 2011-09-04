@@ -14,7 +14,7 @@ class DynamicFindBehavior extends ModelBehavior {
  * @access public
  */
 	var $mapMethods = array(
-		'/^(find){1}(all|by)?(.+)(by){1}(.+)$/' => '_find',
+		'/^(find){1}(all|list)?(.+)(by|for){1}(.+)$/' => '_find',
 	);
 
 /**
@@ -46,26 +46,21 @@ class DynamicFindBehavior extends ModelBehavior {
  * @param string $method
  * @param mixed $condition
  */
-	function _find(&$model, $method, $cond = null) {
-		preg_match('/^(find){1}(all|by)?(.+)(by){1}(.+)$/', $method, $matches);
-		$type = 'all';
+	function _find(&$model, $method, $cond = null, $query = array()) {
+		preg_match('/^(find){1}(all|list)?(.+)(by|for){1}(.+)$/', $method, $matches);
+		$type = 'first';
+		if (!empty($matches[2])) {
+			$type = $matches[2];
+		}
 		$retrieve_field = $matches[3];
 		$search_field = $matches[5];
-		if (is_array($cond)) {
-			if ($matches[2] !== 'all') {
-				$type = $cond[1];
-			} else {
-				$cond[1];
-			}
-			$cond = $cond[0];
-		}
 		$a = $model->alias;
-		$s = isset($this->settings[$a]) ? $this->settings[$a] : $this->_allowed;
 		$schema = array();
 		$tmp = array_merge(array_keys($model->schema()), array_keys($model->virtualFields));
 		foreach ($tmp as $field) {
 			$schema[strtolower(str_replace('_', '', $field))] = $field;
 		}
+		
 		if (
 			$model->hasField($schema[$search_field], true) &&
 			$model->hasField($schema[$retrieve_field], true)
@@ -76,10 +71,19 @@ class DynamicFindBehavior extends ModelBehavior {
 				),
 				'recursive' => -1
 			);
-			if ($type == 'all') {
+			if ($type == 'list') {
+				$options['fields'] = array(
+					$model->alias.'.'.$model->primaryKey,
+					$model->alias.'.'.$schema[$retrieve_field]
+				);
+			} else {
 				$options['fields'] = array($model->alias.'.'.$schema[$retrieve_field]);
 			}
+			$options = Set::merge($options, $query);
 			$ret = $model->find($type, $options);
+			if ($type == 'first' && !empty($ret)) {
+				$ret = $ret[$model->alias][$schema[$retrieve_field]];
+			}
 		}
 		return $ret;
 	}
