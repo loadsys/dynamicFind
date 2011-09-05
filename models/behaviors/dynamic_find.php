@@ -30,7 +30,6 @@ class DynamicFindBehavior extends ModelBehavior {
 		if (!empty($matches[2])) {
 			$type = $matches[2];
 		}
-		debug($matches);
 		$retrieve_field = $matches[3];
 		$search_field = $matches[5];
 		$schema = array();
@@ -38,8 +37,6 @@ class DynamicFindBehavior extends ModelBehavior {
 		foreach ($tmp as $field) {
 			$schema[strtolower(str_replace('_', '', $field))] = $field;
 		}
-		
-		debug($schema);
 		
 		if (
 			$model->hasField($schema[$search_field], true) &&
