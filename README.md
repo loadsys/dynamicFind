@@ -7,7 +7,7 @@
 
 ## Usage
 
-This behavior allows you to use more convenience methods on your models. Methods like $this->ModelName->findNameById($id), where Name can be any field or virtual field in the database table, and Id can be any field (not virtual) in the same table.
+This behavior allows you to use more convenience methods on your models. Methods like $this->ModelName->findNameById($id), where Name can be any field or virtual field in the database table, and Id can be any field or virtual field in the same table.
 
 Multiple methods are available, but all can take a second parameter, which is an array of additions query information. You could pass in any of the keys you would pass into the Model::find() second parameter and they will merge with what the behavior creates.
 
