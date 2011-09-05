@@ -17,28 +17,6 @@ class DynamicFindBehavior extends ModelBehavior {
 		'/^(find){1}(All|List)?(.+)(By|For){1}(.+)$/' => '_find',
 	);
 
-/**
- * settings
- * 
- * @var array
- * @access public
- */
-	var $settings = array();
-		
-/**
- * Initialization method for the behavior. Can accept options from models. The
- * options can include the following keys: whitelist, blacklist and log
- *
- * @param object $model
- * @param array $options
- * @access public
- * @return void
- */
-	function setup(&$model, $options = array()) {
-		$a = $model->alias;
-		$this->settings[$a] = $options;
-	}
-
 /** 
  * Handles all of the find[field]by[field] methods
  *
@@ -54,7 +32,6 @@ class DynamicFindBehavior extends ModelBehavior {
 		}
 		$retrieve_field = Inflector::underscore($matches[3]);
 		$search_field = Inflector::underscore($matches[5]);
-		$a = $model->alias;
 		if ($model->hasField($search_field, true) && $model->hasField($retrieve_field, true)) {
 			$options = array(
 				'conditions' => array(
