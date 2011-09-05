@@ -16,29 +16,7 @@ class DynamicFindBehavior extends ModelBehavior {
 	var $mapMethods = array(
 		'/^(find){1}(all|list)?(.+)(by|for){1}(.+)$/' => '_find',
 	);
-
-/**
- * settings
- * 
- * @var array
- * @access public
- */
-	var $settings = array();
-		
-/**
- * Initialization method for the behavior. Can accept options from models. The
- * options can include the following keys: whitelist, blacklist and log
- *
- * @param object $model
- * @param array $options
- * @access public
- * @return void
- */
-	function setup(&$model, $options = array()) {
-		$a = $model->alias;
-		$this->settings[$a] = $options;
-	}
-
+	
 /** 
  * Handles all of the find[field]by[field] methods
  *
@@ -52,14 +30,16 @@ class DynamicFindBehavior extends ModelBehavior {
 		if (!empty($matches[2])) {
 			$type = $matches[2];
 		}
+		debug($matches);
 		$retrieve_field = $matches[3];
 		$search_field = $matches[5];
-		$a = $model->alias;
 		$schema = array();
 		$tmp = array_merge(array_keys($model->schema()), array_keys($model->virtualFields));
 		foreach ($tmp as $field) {
 			$schema[strtolower(str_replace('_', '', $field))] = $field;
 		}
+		
+		debug($schema);
 		
 		if (
 			$model->hasField($schema[$search_field], true) &&
